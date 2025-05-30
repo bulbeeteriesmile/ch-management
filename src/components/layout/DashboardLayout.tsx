@@ -6,11 +6,9 @@ import {
   BarChart3, 
   Users, 
   ShoppingCart, 
-  Settings, 
   LogOut, 
   Menu,
-  X,
-  Bell
+  X
 } from "lucide-react";
 
 interface DashboardLayoutProps {
@@ -28,8 +26,7 @@ export const DashboardLayout = ({ children, activeTab, setActiveTab }: Dashboard
     { id: 'overview', name: 'Overview', icon: BarChart3 },
     { id: 'customers', name: 'Customers', icon: Users },
     { id: 'sales', name: 'Sales', icon: ShoppingCart },
-    { id: 'analytics', name: 'Analytics', icon: BarChart3 },
-    { id: 'settings', name: 'Settings', icon: Settings },
+    { id: 'analytics', name: 'Analytics', icon: BarChart3 }
   ];
 
   const handleLogout = () => {
@@ -114,14 +111,6 @@ export const DashboardLayout = ({ children, activeTab, setActiveTab }: Dashboard
             <h1 className="text-xl font-semibold capitalize">
               {activeTab === 'overview' ? 'Dashboard Overview' : activeTab}
             </h1>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" className="hover-glow">
-              <Bell className="h-4 w-4" />
-            </Button>
-            <div className="text-sm">
-              <div className="font-medium">{userName}</div>
-            </div>
           </div>
         </header>
 

@@ -37,6 +37,11 @@ export const CustomerManagement = () => {
     }
   }, []);
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // DD/MM/YYYY format
+  };
+
   const handleAddCustomer = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -192,8 +197,9 @@ export const CustomerManagement = () => {
           <Card className="hover-glow">
             <CardContent className="p-8 text-center">
               <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">
-                {searchTerm ? 'No customers found matching your search.' : 'No customers yet. Add your first customer!'}
+              <p className="text-gray-500 text-lg font-medium">No Data Available</p>
+              <p className="text-gray-400 text-sm mt-2">
+                {searchTerm ? 'No customers found matching your search.' : 'Add your first customer to get started!'}
               </p>
             </CardContent>
           </Card>
@@ -223,7 +229,7 @@ export const CustomerManagement = () => {
                       PKR {customer.totalSpent.toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-500">
-                      Last order: {customer.lastOrder}
+                      Last order: {formatDate(customer.lastOrder)}
                     </div>
                   </div>
                 </div>

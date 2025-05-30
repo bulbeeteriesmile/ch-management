@@ -44,9 +44,9 @@ const Dashboard = () => {
     totalCustomers: customers.length,
     totalOrders: customers.reduce((sum, customer) => sum + customer.orderCount, 0),
     monthlyRevenue: customers.reduce((sum, customer) => sum + customer.totalSpent, 0),
-    avgOrderValue: customers.length > 0 ? 
+    avgOrderValue: customers.length > 0 && customers.reduce((sum, customer) => sum + customer.orderCount, 0) > 0 ? 
       customers.reduce((sum, customer) => sum + customer.totalSpent, 0) / 
-      Math.max(customers.reduce((sum, customer) => sum + customer.orderCount, 0), 1) : 0
+      customers.reduce((sum, customer) => sum + customer.orderCount, 0) : 0
   };
 
   const renderContent = () => {
@@ -67,7 +67,7 @@ const Dashboard = () => {
                   <Users className="h-4 w-4 text-brand-green" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalCustomers.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">{stats.totalCustomers}</div>
                   <p className="text-xs text-muted-foreground">
                     {stats.totalCustomers === 0 ? 'Add your first customer!' : 'Active customers'}
                   </p>
@@ -80,7 +80,7 @@ const Dashboard = () => {
                   <ShoppingCart className="h-4 w-4 text-brand-orange" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{stats.totalOrders.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">{stats.totalOrders}</div>
                   <p className="text-xs text-muted-foreground">
                     {stats.totalOrders === 0 ? 'No orders yet' : 'Orders placed'}
                   </p>

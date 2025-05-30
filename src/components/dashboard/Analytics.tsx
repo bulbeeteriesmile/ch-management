@@ -8,19 +8,19 @@ import {
   Users, 
   Clock, 
   Star, 
-  AlertTriangle, 
-  Download,
+  AlertTriangle,
   Calendar,
   PieChart,
   BarChart3
 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Pie, Area, AreaChart } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
-import * as XLSX from 'xlsx';
+import { InactiveCustomersPopup } from "./InactiveCustomersPopup";
 
 export const Analytics = () => {
   const [customers, setCustomers] = useState<any[]>([]);
   const [salesData, setSalesData] = useState<any[]>([]);
+  const [showInactiveCustomers, setShowInactiveCustomers] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,21 +38,23 @@ export const Analytics = () => {
 
   const topCustomers = customers
     .sort((a, b) => b.totalSpent - a.totalSpent)
-    .slice(0, 4);
+    .slice(0, 5);
 
   const chartColors = ['#e74c3c', '#27ae60', '#3498db', '#f39c12', '#9b59b6'];
 
-  const revenueChartData = salesData.map(item => ({
-    date: item.date,
-    revenue: item.revenue,
-    orders: item.orders
-  }));
+  // Generate sales growth data from customer data
+  const salesGrowthData = customers.length > 0 ? customers.map((customer, index) => ({
+    date: new Date(customer.lastOrder).toLocaleDateString('en-GB'),
+    revenue: customer.totalSpent,
+    orders: customer.orderCount,
+    growth: index > 0 ? ((customer.totalSpent - (customers[index-1]?.totalSpent || 0)) / (customers[index-1]?.totalSpent || 1)) * 100 : 0
+  })).slice(0, 10) : [];
 
-  const customerDistributionData = customers.map((customer, index) => ({
+  const customerDistributionData = topCustomers.map((customer, index) => ({
     name: customer.name,
     value: customer.totalSpent,
     color: chartColors[index % chartColors.length]
-  })).slice(0, 5);
+  }));
 
   const alerts = [];
   
@@ -67,69 +69,32 @@ export const Analytics = () => {
     alerts.push({
       type: 'warning',
       message: `${inactiveCustomers.length} customers haven't ordered in 14+ days`,
-      action: 'View customers'
+      action: 'View Customers',
+      onClick: () => setShowInactiveCustomers(true)
     });
   }
 
-  if (salesData.length > 1) {
-    const recentRevenue = salesData[salesData.length - 1]?.revenue || 0;
-    const previousRevenue = salesData[salesData.length - 2]?.revenue || 0;
-    const change = ((recentRevenue - previousRevenue) / (previousRevenue || 1)) * 100;
+  if (customers.length > 1) {
+    const totalRevenue = customers.reduce((sum, c) => sum + c.totalSpent, 0);
+    const avgRevenue = totalRevenue / customers.length;
+    const recentCustomers = customers.slice(-3);
+    const recentAvg = recentCustomers.reduce((sum, c) => sum + c.totalSpent, 0) / recentCustomers.length;
+    const change = ((recentAvg - avgRevenue) / avgRevenue) * 100;
     
     if (change > 10) {
       alerts.push({
         type: 'success',
-        message: `Revenue increased by ${change.toFixed(1)}% recently`,
-        action: 'View report'
+        message: `Revenue per customer increased by ${change.toFixed(1)}%`,
+        action: 'View Details'
       });
     } else if (change < -10) {
       alerts.push({
         type: 'warning',
-        message: `Revenue decreased by ${Math.abs(change).toFixed(1)}% recently`,
-        action: 'View details'
+        message: `Revenue per customer decreased by ${Math.abs(change).toFixed(1)}%`,
+        action: 'View Details'
       });
     }
   }
-
-  const exportAnalytics = () => {
-    if (customers.length === 0 && salesData.length === 0) {
-      toast({
-        title: "No Data to Export",
-        description: "Add some data first to export analytics.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const analyticsData = [
-      { Metric: 'Total Customers', Value: customers.length },
-      { Metric: 'Total Orders', Value: customers.reduce((sum, c) => sum + c.orderCount, 0) },
-      { Metric: 'Total Revenue (PKR)', Value: customers.reduce((sum, c) => sum + c.totalSpent, 0) },
-      { Metric: 'Average Order Value (PKR)', Value: customers.length > 0 ? (customers.reduce((sum, c) => sum + c.totalSpent, 0) / customers.reduce((sum, c) => sum + c.orderCount, 0) || 0).toFixed(2) : 0 },
-    ];
-
-    const worksheet = XLSX.utils.json_to_sheet(analyticsData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Analytics_Report');
-    
-    if (customers.length > 0) {
-      const customerSheet = XLSX.utils.json_to_sheet(customers.map(c => ({
-        Name: c.name,
-        Phone: c.phone,
-        'Total Spent (PKR)': c.totalSpent,
-        'Order Count': c.orderCount,
-        'Last Order': c.lastOrder
-      })));
-      XLSX.utils.book_append_sheet(workbook, customerSheet, 'Top_Customers');
-    }
-    
-    XLSX.writeFile(workbook, `analytics_report_${new Date().toISOString().split('T')[0]}.xlsx`);
-    
-    toast({
-      title: "Export Successful",
-      description: "Analytics data has been exported to Excel file.",
-    });
-  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -138,13 +103,6 @@ export const Analytics = () => {
           <h2 className="text-2xl font-bold">Business Analytics</h2>
           <p className="text-gray-600">Deep insights into your business performance</p>
         </div>
-        <Button 
-          onClick={exportAnalytics}
-          className="bg-gradient-to-r from-brand-orange to-brand-green hover-glow"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export Report
-        </Button>
       </div>
 
       {/* Smart Notifications */}
@@ -166,7 +124,12 @@ export const Analytics = () => {
                     {alert.type === 'success' && <Star className="h-4 w-4 text-green-500" />}
                     <span className="text-sm">{alert.message}</span>
                   </div>
-                  <Button variant="outline" size="sm" className="hover-glow">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="hover-glow"
+                    onClick={alert.onClick}
+                  >
                     {alert.action}
                   </Button>
                 </div>
@@ -177,24 +140,40 @@ export const Analytics = () => {
       )}
 
       {/* Charts Section */}
-      {salesData.length > 0 && (
+      {customers.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="hover-glow">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BarChart3 className="h-5 w-5 text-brand-blue" />
-                <span>Revenue Trend</span>
+                <span>Sales Growth Trend</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={revenueChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => [`PKR ${value}`, 'Revenue']} />
-                  <Line type="monotone" dataKey="revenue" stroke="#e74c3c" strokeWidth={3} />
-                </LineChart>
+                <AreaChart data={salesGrowthData}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#e74c3c" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#e74c3c" stopOpacity={0.1}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    formatter={(value) => [`PKR ${value}`, 'Revenue']}
+                    labelStyle={{ color: '#333' }}
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#e74c3c" 
+                    strokeWidth={3}
+                    fill="url(#colorRevenue)"
+                  />
+                </AreaChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -203,22 +182,32 @@ export const Analytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <BarChart3 className="h-5 w-5 text-brand-green" />
-                <span>Orders Over Time</span>
+                <span>Orders Pattern</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={revenueChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="orders" fill="#27ae60" />
+                <BarChart data={salesGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #ccc' }}
+                  />
+                  <Bar dataKey="orders" fill="#27ae60" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
         </div>
+      ) : (
+        <Card className="hover-glow">
+          <CardContent className="p-8 text-center">
+            <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg font-medium">No Data Available</p>
+            <p className="text-gray-400 text-sm mt-2">Add customers and sales data to view analytics</p>
+          </CardContent>
+        </Card>
       )}
 
       {/* Customer Analysis */}
@@ -260,7 +249,7 @@ export const Analytics = () => {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <PieChart className="h-5 w-5 text-brand-purple" />
-                <span>Customer Revenue Distribution</span>
+                <span>Revenue Distribution</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -344,8 +333,13 @@ export const Analytics = () => {
                     : 'Great! All your customers are active. Keep up the good work!'
                   }
                 </p>
-                <Button size="sm" variant="outline" className="hover-glow">
-                  {inactiveCustomers.length > 0 ? 'Create Campaign' : 'View Details'}
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="hover-glow"
+                  onClick={() => inactiveCustomers.length > 0 && setShowInactiveCustomers(true)}
+                >
+                  {inactiveCustomers.length > 0 ? 'View Customers' : 'View Details'}
                 </Button>
               </div>
               
@@ -363,18 +357,24 @@ export const Analytics = () => {
               </div>
               
               <div className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                <h4 className="font-medium text-brand-blue mb-2">Data Insights</h4>
+                <h4 className="font-medium text-brand-blue mb-2">Business Growth</h4>
                 <p className="text-sm text-gray-600 mb-3">
-                  Export your data regularly to track trends and make informed decisions.
+                  Monitor your sales trends regularly to identify growth opportunities.
                 </p>
-                <Button size="sm" variant="outline" className="hover-glow" onClick={exportAnalytics}>
-                  Export Data
+                <Button size="sm" variant="outline" className="hover-glow">
+                  View Trends
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
       )}
+
+      <InactiveCustomersPopup 
+        isOpen={showInactiveCustomers}
+        onClose={() => setShowInactiveCustomers(false)}
+        customers={inactiveCustomers}
+      />
     </div>
   );
 };
