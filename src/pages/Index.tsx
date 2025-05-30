@@ -1,48 +1,14 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, Users, TrendingUp, Shield, BarChart3, Clock, CheckCircle } from "lucide-react";
+import { ChefHat, ArrowRight, Sparkles } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
 
 const Index = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
-
-  const features = [
-    {
-      icon: Users,
-      title: "Customer Management",
-      description: "Centralized customer database with quick search and retrieval by phone number"
-    },
-    {
-      icon: TrendingUp,
-      title: "Real-Time Analytics",
-      description: "Live sales tracking with daily, weekly, and monthly insights"
-    },
-    {
-      icon: BarChart3,
-      title: "Business Intelligence",
-      description: "Advanced analytics on customer patterns and order trends"
-    },
-    {
-      icon: Shield,
-      title: "Role-Based Access",
-      description: "Secure access control for different team members"
-    },
-    {
-      icon: Clock,
-      title: "Smart Notifications",
-      description: "Automated alerts for customer retention and business insights"
-    },
-    {
-      icon: CheckCircle,
-      title: "Offline Support",
-      description: "Continue operations even without internet connectivity"
-    }
-  ];
 
   if (showLogin) {
     return <LoginForm onBack={() => setShowLogin(false)} onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }} />;
@@ -53,146 +19,87 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen gradient-bg">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 glass-effect">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <ChefHat className="h-8 w-8 text-brand-orange" />
-            <span className="text-xl font-bold bg-gradient-to-r from-brand-orange to-brand-green bg-clip-text text-transparent">
+            <ChefHat className="h-8 w-8 text-brand-orange animate-float" />
+            <span className="text-xl font-bold text-gray-800">
               FoodBrand Pro
             </span>
           </div>
           <div className="flex space-x-3">
-            <Button variant="outline" onClick={() => setShowLogin(true)} className="hover:scale-105 transition-transform">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowLogin(true)} 
+              className="hover-glow border-white/30 text-gray-800 hover:bg-white/20"
+            >
               Login
             </Button>
-            <Button onClick={() => setShowSignup(true)} className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-transform">
+            <Button 
+              onClick={() => setShowSignup(true)} 
+              className="bg-brand-orange hover:bg-brand-orange/90 text-white hover-glow"
+            >
               Sign Up
             </Button>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="gradient-bg pt-24 pb-20">
-        <div className="container mx-auto px-4 text-center">
+      {/* Main Content */}
+      <section className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center max-w-4xl mx-auto">
           <div className="animate-fade-in">
-            <Badge className="mb-6 bg-white/20 text-white border-white/30">
+            <Badge className="mb-6 bg-white/20 text-white border-white/30 animate-glow">
+              <Sparkles className="h-4 w-4 mr-2" />
               Next-Generation Food Business Management
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Transform Your Food Business
-              <span className="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent">
-                Operations
+            
+            <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 leading-tight">
+              Transform Your
+              <span className="block bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text text-transparent animate-pulse">
+                Food Business
               </span>
             </h1>
-            <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+            
+            <p className="text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
               Streamline customer management, track sales in real-time, and gain powerful insights 
               that help your food brand grow faster than ever before.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Button 
                 size="lg" 
                 onClick={() => setShowSignup(true)}
-                className="bg-white text-brand-orange hover:bg-gray-50 hover:scale-105 transition-all duration-200 text-lg px-8 py-3"
+                className="bg-white text-brand-orange hover:bg-gray-50 hover-glow text-xl px-12 py-4 rounded-full group"
               >
-                Start Free Trial
+                Get Started Now
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                onClick={() => setShowLogin(true)}
-                className="border-white text-white hover:bg-white/10 hover:scale-105 transition-all duration-200 text-lg px-8 py-3"
-              >
-                Watch Demo
-              </Button>
+              
+              <div className="text-white/80 text-sm">
+                No credit card required • Free setup
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Everything You Need to Succeed</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Built specifically for food brands, our platform combines powerful features 
-              with an intuitive interface that your team will love.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:scale-105 animate-scale-in">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-gradient-to-r from-brand-orange to-brand-green rounded-lg flex items-center justify-center mb-4">
-                    <feature.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      {/* Floating Elements */}
+      <div className="fixed bottom-10 right-10 animate-float">
+        <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
+          <ChefHat className="h-8 w-8 text-white/60" />
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-brand-orange mb-2">500+</div>
-              <div className="text-gray-600">Food Brands Using Our Platform</div>
-            </div>
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-brand-green mb-2">99.9%</div>
-              <div className="text-gray-600">Uptime Guarantee</div>
-            </div>
-            <div className="animate-fade-in">
-              <div className="text-4xl font-bold text-brand-blue mb-2">24/7</div>
-              <div className="text-gray-600">Customer Support</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 gradient-bg">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Transform Your Business?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join hundreds of food brands already using FoodBrand Pro to streamline 
-            their operations and boost their growth.
-          </p>
-          <Button 
-            size="lg"
-            onClick={() => setShowSignup(true)}
-            className="bg-white text-brand-orange hover:bg-gray-50 hover:scale-105 transition-all duration-200 text-lg px-8 py-3"
-          >
-            Get Started Today
-          </Button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-12 bg-gray-900 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <ChefHat className="h-6 w-6 text-brand-orange" />
-            <span className="text-lg font-bold">FoodBrand Pro</span>
-          </div>
-          <p className="text-gray-400">
-            © 2024 FoodBrand Pro. All rights reserved. Built for the food industry.
-          </p>
-        </div>
-      </footer>
+      </div>
+      
+      <div className="fixed top-1/3 left-10 animate-float" style={{ animationDelay: '1s' }}>
+        <div className="w-12 h-12 bg-brand-yellow/20 rounded-full"></div>
+      </div>
+      
+      <div className="fixed bottom-1/3 left-1/4 animate-float" style={{ animationDelay: '2s' }}>
+        <div className="w-8 h-8 bg-brand-green/20 rounded-full"></div>
+      </div>
     </div>
   );
 };

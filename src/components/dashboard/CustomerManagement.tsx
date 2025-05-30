@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,30 +34,6 @@ export const CustomerManagement = () => {
     const savedCustomers = localStorage.getItem('customers');
     if (savedCustomers) {
       setCustomers(JSON.parse(savedCustomers));
-    } else {
-      // Demo data
-      const demoCustomers: Customer[] = [
-        {
-          id: '1',
-          name: 'John Smith',
-          phone: '12345678901',
-          address: '123 Main St, City, State',
-          orderCount: 15,
-          totalSpent: 450.50,
-          lastOrder: '2024-01-20'
-        },
-        {
-          id: '2',
-          name: 'Sarah Johnson',
-          phone: '09876543210',
-          address: '456 Oak Ave, City, State',
-          orderCount: 8,
-          totalSpent: 320.00,
-          lastOrder: '2024-01-18'
-        }
-      ];
-      setCustomers(demoCustomers);
-      localStorage.setItem('customers', JSON.stringify(demoCustomers));
     }
   }, []);
 
@@ -118,7 +95,7 @@ export const CustomerManagement = () => {
         </div>
         <Button 
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-transform"
+          className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-all duration-300 hover-glow"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Customer
@@ -127,7 +104,7 @@ export const CustomerManagement = () => {
 
       {/* Add Customer Form */}
       {showAddForm && (
-        <Card className="animate-scale-in">
+        <Card className="animate-scale-in hover-glow">
           <CardHeader>
             <CardTitle>Add New Customer</CardTitle>
           </CardHeader>
@@ -144,7 +121,7 @@ export const CustomerManagement = () => {
                       placeholder="Enter full name"
                       value={newCustomer.name}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
-                      className="pl-10"
+                      className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
                       required
                     />
                   </div>
@@ -156,10 +133,10 @@ export const CustomerManagement = () => {
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="12345678901"
+                      placeholder="03001234567"
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
-                      className="pl-10"
+                      className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
                       required
                     />
                   </div>
@@ -175,13 +152,13 @@ export const CustomerManagement = () => {
                     placeholder="Enter full address"
                     value={newCustomer.address}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, address: e.target.value }))}
-                    className="pl-10"
+                    className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
                     required
                   />
                 </div>
               </div>
               <div className="flex space-x-3">
-                <Button type="submit" className="bg-brand-green hover:bg-brand-green/90">
+                <Button type="submit" className="bg-brand-green hover:bg-brand-green/90 hover-glow">
                   Add Customer
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
@@ -194,7 +171,7 @@ export const CustomerManagement = () => {
       )}
 
       {/* Search */}
-      <Card>
+      <Card className="hover-glow">
         <CardContent className="p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -203,7 +180,7 @@ export const CustomerManagement = () => {
               placeholder="Search by phone number or name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
             />
           </div>
         </CardContent>
@@ -212,7 +189,7 @@ export const CustomerManagement = () => {
       {/* Customer List */}
       <div className="grid gap-4">
         {filteredCustomers.length === 0 ? (
-          <Card>
+          <Card className="hover-glow">
             <CardContent className="p-8 text-center">
               <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500">
@@ -222,13 +199,13 @@ export const CustomerManagement = () => {
           </Card>
         ) : (
           filteredCustomers.map((customer) => (
-            <Card key={customer.id} className="hover:shadow-lg transition-shadow">
+            <Card key={customer.id} className="hover:shadow-lg transition-all duration-300 hover-glow">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-3">
                       <h3 className="text-lg font-semibold">{customer.name}</h3>
-                      <Badge variant="outline" className="bg-brand-green/10 text-brand-green">
+                      <Badge variant="outline" className="bg-brand-green/10 text-brand-green border-brand-green/30">
                         {customer.orderCount} orders
                       </Badge>
                     </div>
@@ -243,7 +220,7 @@ export const CustomerManagement = () => {
                   </div>
                   <div className="text-right space-y-1">
                     <div className="text-lg font-bold text-brand-orange">
-                      ${customer.totalSpent.toFixed(2)}
+                      PKR {customer.totalSpent.toLocaleString()}
                     </div>
                     <div className="text-sm text-gray-500">
                       Last order: {customer.lastOrder}
@@ -257,34 +234,36 @@ export const CustomerManagement = () => {
       </div>
 
       {/* Stats */}
-      <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Customer Database Stats</h3>
-              <div className="grid grid-cols-3 gap-6">
-                <div>
-                  <div className="text-2xl font-bold text-brand-orange">{customers.length}</div>
-                  <div className="text-sm text-gray-600">Total Customers</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-brand-green">
-                    {customers.reduce((sum, customer) => sum + customer.orderCount, 0)}
+      {customers.length > 0 && (
+        <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 hover-glow">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Customer Database Stats</h3>
+                <div className="grid grid-cols-3 gap-6">
+                  <div>
+                    <div className="text-2xl font-bold text-brand-orange">{customers.length}</div>
+                    <div className="text-sm text-gray-600">Total Customers</div>
                   </div>
-                  <div className="text-sm text-gray-600">Total Orders</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-brand-blue">
-                    ${customers.reduce((sum, customer) => sum + customer.totalSpent, 0).toFixed(2)}
+                  <div>
+                    <div className="text-2xl font-bold text-brand-green">
+                      {customers.reduce((sum, customer) => sum + customer.orderCount, 0)}
+                    </div>
+                    <div className="text-sm text-gray-600">Total Orders</div>
                   </div>
-                  <div className="text-sm text-gray-600">Total Revenue</div>
+                  <div>
+                    <div className="text-2xl font-bold text-brand-blue">
+                      PKR {customers.reduce((sum, customer) => sum + customer.totalSpent, 0).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600">Total Revenue</div>
+                  </div>
                 </div>
               </div>
+              <ShoppingBag className="h-16 w-16 text-brand-orange/30" />
             </div>
-            <ShoppingBag className="h-16 w-16 text-brand-orange/30" />
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
