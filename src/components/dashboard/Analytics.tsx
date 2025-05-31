@@ -16,50 +16,81 @@ interface Customer {
   lastOrder: string;
 }
 
+interface SalesRecord {
+  date: string;
+  amount: number;
+  customerPhone: string;
+}
+
 export const Analytics = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [salesData, setSalesData] = useState<SalesRecord[]>([]);
   const [showInactivePopup, setShowInactivePopup] = useState(false);
 
   useEffect(() => {
     const savedCustomers = localStorage.getItem('customers');
+    const savedSalesData = localStorage.getItem('salesData');
+    
     if (savedCustomers) {
       setCustomers(JSON.parse(savedCustomers));
     }
+    if (savedSalesData) {
+      setSalesData(JSON.parse(savedSalesData));
+    }
   }, []);
 
-  // Generate sales growth data based on dates
+  // Generate sales growth data based on actual sales data
   const generateSalesGrowthData = () => {
     const last7Days = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
+      const dateString = date.toISOString().split('T')[0];
       
-      // Simulate sales data with some growth trend
-      const baseSales = 1000 + (6 - i) * 150; // Growing trend
-      const randomVariation = Math.random() * 200 - 100; // Random variation
-      const sales = Math.max(0, baseSales + randomVariation);
+      // Get actual sales for this date
+      const dailySales = salesData
+        .filter(sale => sale.date === dateString)
+        .reduce((sum, sale) => sum + sale.amount, 0);
+      
+      const orderCount = salesData.filter(sale => sale.date === dateString).length;
       
       last7Days.push({
         date: date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }),
-        sales: Math.round(sales),
-        orders: Math.round(sales / 100) // Approximate orders based on sales
+        sales: dailySales,
+        orders: orderCount
       });
     }
     return last7Days;
   };
 
-  const salesGrowthData = generateSalesGrowthData();
-
-  // Generate monthly revenue data
+  // Generate monthly revenue data based on actual data
   const generateMonthlyData = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    return months.map((month, index) => ({
+    const monthlyRevenue: { [key: string]: number } = {};
+    const currentDate = new Date();
+    
+    // Initialize last 6 months with 0
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+      const monthKey = date.toLocaleDateString('en-US', { month: 'short' });
+      monthlyRevenue[monthKey] = 0;
+    }
+    
+    // Add actual sales data
+    salesData.forEach(sale => {
+      const saleDate = new Date(sale.date);
+      const monthKey = saleDate.toLocaleDateString('en-US', { month: 'short' });
+      if (monthlyRevenue.hasOwnProperty(monthKey)) {
+        monthlyRevenue[monthKey] += sale.amount;
+      }
+    });
+    
+    return Object.entries(monthlyRevenue).map(([month, revenue]) => ({
       month,
-      revenue: Math.round(5000 + index * 1200 + Math.random() * 1000),
-      growth: Math.round((5 + index * 2 + Math.random() * 3) * 10) / 10
+      revenue: Math.round(revenue)
     }));
   };
 
+  const salesGrowthData = generateSalesGrowthData();
   const monthlyData = generateMonthlyData();
 
   // Calculate inactive customers (no orders in 14+ days)
@@ -68,6 +99,7 @@ export const Analytics = () => {
     fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
     
     return customers.filter(customer => {
+      if (!customer.lastOrder) return true;
       const lastOrderDate = new Date(customer.lastOrder);
       return lastOrderDate < fourteenDaysAgo;
     });
@@ -80,11 +112,26 @@ export const Analytics = () => {
   const totalOrders = customers.reduce((sum, customer) => sum + customer.orderCount, 0);
   const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
+  // Calculate growth percentages based on actual data
+  const calculateGrowthPercentage = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return ((current - previous) / previous * 100);
+  };
+
+  // Get previous month data for growth calculation
+  const currentMonthRevenue = monthlyData[monthlyData.length - 1]?.revenue || 0;
+  const previousMonthRevenue = monthlyData[monthlyData.length - 2]?.revenue || 0;
+  const revenueGrowth = calculateGrowthPercentage(currentMonthRevenue, previousMonthRevenue);
+
   // Customer distribution data for pie chart
   const customerDistribution = [
     { name: 'Active', value: customers.length - inactiveCustomers.length, color: '#22c55e' },
     { name: 'Inactive', value: inactiveCustomers.length, color: '#ef4444' }
   ];
+
+  // Calculate customer engagement percentage
+  const customerEngagement = customers.length > 0 ? 
+    ((customers.length - inactiveCustomers.length) / customers.length * 100) : 0;
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -103,7 +150,9 @@ export const Analytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-brand-orange">PKR {totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-green-400 mt-1">↗ +12.5% from last month</p>
+            <p className={`text-xs mt-1 ${revenueGrowth >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {revenueGrowth >= 0 ? '↗' : '↘'} {Math.abs(revenueGrowth).toFixed(1)}% from last month
+            </p>
           </CardContent>
         </Card>
 
@@ -113,7 +162,7 @@ export const Analytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-brand-green">{totalOrders}</div>
-            <p className="text-xs text-green-400 mt-1">↗ +8.2% from last month</p>
+            <p className="text-xs text-gray-400 mt-1">Total orders placed</p>
           </CardContent>
         </Card>
 
@@ -123,7 +172,7 @@ export const Analytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-brand-blue">PKR {avgOrderValue.toFixed(0)}</div>
-            <p className="text-xs text-green-400 mt-1">↗ +4.1% from last month</p>
+            <p className="text-xs text-gray-400 mt-1">Per order average</p>
           </CardContent>
         </Card>
 
@@ -133,7 +182,7 @@ export const Analytics = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-brand-purple">{customers.length - inactiveCustomers.length}</div>
-            <p className="text-xs text-green-400 mt-1">↗ +15.3% from last month</p>
+            <p className="text-xs text-gray-400 mt-1">Currently active</p>
           </CardContent>
         </Card>
       </div>
@@ -207,44 +256,53 @@ export const Analytics = () => {
             <p className="text-sm text-gray-400">Active vs inactive customer breakdown</p>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={customerDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {customerDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1f2937', 
-                      border: '1px solid #374151',
-                      borderRadius: '8px',
-                      color: '#ffffff'
-                    }} 
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center space-x-6 mt-4">
-              {customerDistribution.map((item, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: item.color }}
-                  ></div>
-                  <span className="text-sm text-gray-300">{item.name}: {item.value}</span>
+            {customers.length === 0 ? (
+              <div className="text-center py-16">
+                <Users className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                <p className="text-gray-400">No customer data available yet</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-center">
+                  <ResponsiveContainer width="100%" height={250}>
+                    <PieChart>
+                      <Pie
+                        data={customerDistribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {customerDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#1f2937', 
+                          border: '1px solid #374151',
+                          borderRadius: '8px',
+                          color: '#ffffff'
+                        }} 
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </div>
-              ))}
-            </div>
+                <div className="flex justify-center space-x-6 mt-4">
+                  {customerDistribution.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: item.color }}
+                      ></div>
+                      <span className="text-sm text-gray-300">{item.name}: {item.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 
@@ -280,17 +338,19 @@ export const Analytics = () => {
               </div>
             )}
 
-            <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <TrendingUp className="h-4 w-4 text-green-500 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-green-400">Growth Trending</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Sales are up 12.5% this month. Great work!
-                  </p>
+            {revenueGrowth > 0 && (
+              <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <TrendingUp className="h-4 w-4 text-green-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-green-400">Growth Trending</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Sales are up {revenueGrowth.toFixed(1)}% this month. Great work!
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
               <div className="flex items-start space-x-3">
@@ -298,7 +358,7 @@ export const Analytics = () => {
                 <div>
                   <p className="text-sm font-medium text-blue-400">Customer Engagement</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    {((customers.length - inactiveCustomers.length) / Math.max(customers.length, 1) * 100).toFixed(1)}% of customers are active
+                    {customerEngagement.toFixed(1)}% of customers are active
                   </p>
                 </div>
               </div>

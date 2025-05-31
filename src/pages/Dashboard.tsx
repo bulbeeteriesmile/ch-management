@@ -1,16 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, ShoppingCart, TrendingUp, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, ShoppingCart, TrendingUp, DollarSign, Plus } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CustomerManagement } from "@/components/dashboard/CustomerManagement";
 import { SalesTracking } from "@/components/dashboard/SalesTracking";
 import { Analytics } from "@/components/dashboard/Analytics";
+import { OrderEntry } from "@/components/dashboard/OrderEntry";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [customers, setCustomers] = useState<any[]>([]);
   const [salesData, setSalesData] = useState<any[]>([]);
+  const [showOrderEntry, setShowOrderEntry] = useState(false);
 
   useEffect(() => {
     // Load real data from localStorage
@@ -60,6 +63,26 @@ const Dashboard = () => {
       default:
         return (
           <div className="space-y-6 animate-fade-in">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Overview</h2>
+                <p className="text-gray-400">Welcome to Cheezy Heaven Dashboard</p>
+              </div>
+              <Button 
+                onClick={() => setShowOrderEntry(true)}
+                className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-all duration-300 hover-glow"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Enter New Order
+              </Button>
+            </div>
+
+            {/* Order Entry Modal */}
+            <OrderEntry 
+              isOpen={showOrderEntry} 
+              onClose={() => setShowOrderEntry(false)} 
+            />
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
