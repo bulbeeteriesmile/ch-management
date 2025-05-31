@@ -1,19 +1,25 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, ShoppingCart, TrendingUp, DollarSign, Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Users, ShoppingCart, TrendingUp, DollarSign, Plus, Trash2 } from "lucide-react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { CustomerManagement } from "@/components/dashboard/CustomerManagement";
 import { SalesTracking } from "@/components/dashboard/SalesTracking";
 import { Analytics } from "@/components/dashboard/Analytics";
 import { OrderEntry } from "@/components/dashboard/OrderEntry";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [customers, setCustomers] = useState<any[]>([]);
   const [salesData, setSalesData] = useState<any[]>([]);
   const [showOrderEntry, setShowOrderEntry] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const { toast } = useToast();
 
   useEffect(() => {
     // Load real data from localStorage
@@ -43,6 +49,47 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleDeleteAllData = () => {
+    if (confirmText.toLowerCase() === 'clear data') {
+      // Clear all localStorage data
+      localStorage.removeItem('customers');
+      localStorage.removeItem('salesData');
+      
+      // Reset state
+      setCustomers([]);
+      setSalesData([]);
+      
+      // Show success toast
+      const toastId = toast({
+        title: "All Data Cleared",
+        description: "All customer and sales data has been permanently deleted.",
+        variant: "destructive",
+      });
+      
+      setTimeout(() => {
+        if (toastId && toastId.dismiss) {
+          toastId.dismiss();
+        }
+      }, 3000);
+      
+      // Reset dialog state
+      setShowDeleteDialog(false);
+      setConfirmText('');
+    } else {
+      const toastId = toast({
+        title: "Incorrect Confirmation",
+        description: "Please type 'clear data' exactly to confirm deletion.",
+        variant: "destructive",
+      });
+      
+      setTimeout(() => {
+        if (toastId && toastId.dismiss) {
+          toastId.dismiss();
+        }
+      }, 3000);
+    }
+  };
+
   const stats = {
     totalCustomers: customers.length,
     totalOrders: customers.reduce((sum, customer) => sum + customer.orderCount, 0),
@@ -68,13 +115,64 @@ const Dashboard = () => {
                 <h2 className="text-2xl font-bold text-white">Overview</h2>
                 <p className="text-gray-400">Welcome to Cheezy Heaven Dashboard</p>
               </div>
-              <Button 
-                onClick={() => setShowOrderEntry(true)}
-                className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-all duration-300 hover-glow"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Enter New Order
-              </Button>
+              <div className="flex space-x-3">
+                <Button 
+                  onClick={() => setShowOrderEntry(true)}
+                  className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-all duration-300 hover-glow"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Enter New Order
+                </Button>
+                
+                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="destructive"
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete All Data
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-gray-800 border-gray-700">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-white">Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-300">
+                        This action cannot be undone. This will permanently delete all customers, orders, and sales data.
+                        <br /><br />
+                        Type <span className="font-bold text-red-400">"clear data"</span> below to confirm:
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <div className="py-4">
+                      <Label htmlFor="confirmText" className="text-gray-300">Confirmation Text</Label>
+                      <Input
+                        id="confirmText"
+                        value={confirmText}
+                        onChange={(e) => setConfirmText(e.target.value)}
+                        placeholder="Type 'clear data' to confirm"
+                        className="mt-2 bg-gray-700 border-gray-600 text-white"
+                      />
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel 
+                        onClick={() => {
+                          setShowDeleteDialog(false);
+                          setConfirmText('');
+                        }}
+                        className="bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600"
+                      >
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleDeleteAllData}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                      >
+                        Delete All Data
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
 
             {/* Order Entry Modal */}
