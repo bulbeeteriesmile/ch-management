@@ -47,22 +47,36 @@ export const CustomerManagement = () => {
     e.preventDefault();
     
     if (newCustomer.phone.length !== 11) {
-      toast({
+      const toastId = toast({
         title: "Invalid Phone Number",
         description: "Phone number must be exactly 11 digits.",
         variant: "destructive",
       });
+      
+      // Auto dismiss after 3 seconds
+      setTimeout(() => {
+        if (toastId && toastId.dismiss) {
+          toastId.dismiss();
+        }
+      }, 3000);
       return;
     }
 
     // Check if phone number already exists
     const existingCustomer = customers.find(c => c.phone === newCustomer.phone);
     if (existingCustomer) {
-      toast({
+      const toastId = toast({
         title: "Customer Already Exists",
         description: `Customer ${existingCustomer.name} already exists with this phone number.`,
         variant: "destructive",
       });
+      
+      // Auto dismiss after 3 seconds
+      setTimeout(() => {
+        if (toastId && toastId.dismiss) {
+          toastId.dismiss();
+        }
+      }, 3000);
       return;
     }
 
@@ -78,10 +92,17 @@ export const CustomerManagement = () => {
     setCustomers(updatedCustomers);
     localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-    toast({
+    const toastId = toast({
       title: "Customer Added",
       description: `${customer.name} has been added successfully.`,
     });
+
+    // Auto dismiss after 3 seconds
+    setTimeout(() => {
+      if (toastId && toastId.dismiss) {
+        toastId.dismiss();
+      }
+    }, 3000);
 
     setNewCustomer({ name: '', phone: '', address: '' });
     setShowAddForm(false);
@@ -93,10 +114,17 @@ export const CustomerManagement = () => {
     setCustomers(updatedCustomers);
     localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-    toast({
+    const toastId = toast({
       title: "Customer Deleted",
       description: `${customerToDelete?.name} has been deleted successfully.`,
     });
+
+    // Auto dismiss after 3 seconds
+    setTimeout(() => {
+      if (toastId && toastId.dismiss) {
+        toastId.dismiss();
+      }
+    }, 3000);
   };
 
   const filteredCustomers = customers.filter(customer =>
@@ -108,8 +136,8 @@ export const CustomerManagement = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Customer Management</h2>
-          <p className="text-gray-600">Manage your customer database</p>
+          <h2 className="text-2xl font-bold text-white">Customer Management</h2>
+          <p className="text-gray-400">Manage your Cheezy Heaven customer database</p>
         </div>
         <Button 
           onClick={() => setShowAddForm(!showAddForm)}
@@ -122,15 +150,15 @@ export const CustomerManagement = () => {
 
       {/* Add Customer Form */}
       {showAddForm && (
-        <Card className="animate-scale-in hover-glow">
+        <Card className="animate-scale-in hover-glow bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle>Add New Customer</CardTitle>
+            <CardTitle className="text-white">Add New Customer</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAddCustomer} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name" className="text-gray-300">Full Name</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -139,13 +167,13 @@ export const CustomerManagement = () => {
                       placeholder="Enter full name"
                       value={newCustomer.name}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, name: e.target.value }))}
-                      className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
+                      className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange bg-gray-700 border-gray-600 text-white"
                       required
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number (11 digits)</Label>
+                  <Label htmlFor="phone" className="text-gray-300">Phone Number (11 digits)</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
@@ -154,14 +182,14 @@ export const CustomerManagement = () => {
                       placeholder="03001234567"
                       value={newCustomer.phone}
                       onChange={(e) => setNewCustomer(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 11) }))}
-                      className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
+                      className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange bg-gray-700 border-gray-600 text-white"
                       required
                     />
                   </div>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address" className="text-gray-300">Address</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
@@ -170,7 +198,7 @@ export const CustomerManagement = () => {
                     placeholder="Enter full address"
                     value={newCustomer.address}
                     onChange={(e) => setNewCustomer(prev => ({ ...prev, address: e.target.value }))}
-                    className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
+                    className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange bg-gray-700 border-gray-600 text-white"
                     required
                   />
                 </div>
@@ -179,7 +207,7 @@ export const CustomerManagement = () => {
                 <Button type="submit" className="bg-brand-green hover:bg-brand-green/90 hover-glow">
                   Add Customer
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-gray-600 text-gray-300 hover:bg-gray-700">
                   Cancel
                 </Button>
               </div>
@@ -189,7 +217,7 @@ export const CustomerManagement = () => {
       )}
 
       {/* Search */}
-      <Card className="hover-glow">
+      <Card className="hover-glow bg-gray-800 border-gray-700">
         <CardContent className="p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -198,7 +226,7 @@ export const CustomerManagement = () => {
               placeholder="Search by phone number or name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange"
+              className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange bg-gray-700 border-gray-600 text-white"
             />
           </div>
         </CardContent>
@@ -280,27 +308,27 @@ export const CustomerManagement = () => {
 
       {/* Stats */}
       {customers.length > 0 && (
-        <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 hover-glow">
+        <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 hover-glow border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold mb-2">Customer Database Stats</h3>
+                <h3 className="text-lg font-semibold mb-2 text-white">Customer Database Stats</h3>
                 <div className="grid grid-cols-3 gap-6">
                   <div>
                     <div className="text-2xl font-bold text-brand-orange">{customers.length}</div>
-                    <div className="text-sm text-gray-600">Total Customers</div>
+                    <div className="text-sm text-gray-400">Total Customers</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-brand-green">
                       {customers.reduce((sum, customer) => sum + customer.orderCount, 0)}
                     </div>
-                    <div className="text-sm text-gray-600">Total Orders</div>
+                    <div className="text-sm text-gray-400">Total Orders</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-brand-blue">
                       PKR {customers.reduce((sum, customer) => sum + customer.totalSpent, 0).toLocaleString()}
                     </div>
-                    <div className="text-sm text-gray-600">Total Revenue</div>
+                    <div className="text-sm text-gray-400">Total Revenue</div>
                   </div>
                 </div>
               </div>
