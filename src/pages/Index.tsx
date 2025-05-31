@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChefHat, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
 
@@ -24,16 +24,15 @@ const Index = () => {
       <nav className="fixed top-0 w-full z-50 glass-effect">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <ChefHat className="h-8 w-8 text-brand-orange animate-float" />
-            <span className="text-xl font-bold text-gray-800">
-              FoodBrand Pro
+            <span className="text-xl font-bold text-white">
+              Cheezy Heaven
             </span>
           </div>
           <div className="flex space-x-3">
             <Button 
               variant="outline" 
               onClick={() => setShowLogin(true)} 
-              className="hover-glow border-white/30 text-gray-800 hover:bg-white/20"
+              className="hover-glow border-white/30 text-white hover:bg-white/20"
             >
               Login
             </Button>
@@ -85,21 +84,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Floating Elements */}
-      <div className="fixed bottom-10 right-10 animate-float">
-        <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-          <ChefHat className="h-8 w-8 text-white/60" />
-        </div>
-      </div>
-      
-      <div className="fixed top-1/3 left-10 animate-float" style={{ animationDelay: '1s' }}>
-        <div className="w-12 h-12 bg-brand-yellow/20 rounded-full"></div>
-      </div>
-      
-      <div className="fixed bottom-1/3 left-1/4 animate-float" style={{ animationDelay: '2s' }}>
-        <div className="w-8 h-8 bg-brand-green/20 rounded-full"></div>
-      </div>
     </div>
   );
 };

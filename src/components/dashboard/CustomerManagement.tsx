@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Plus, User, Phone, MapPin, ShoppingBag, Users } from "lucide-react";
+import { Search, Plus, User, Phone, MapPin, ShoppingBag, Users, Trash } from "lucide-react";
 
 interface Customer {
   id: string;
@@ -84,6 +85,18 @@ export const CustomerManagement = () => {
 
     setNewCustomer({ name: '', phone: '', address: '' });
     setShowAddForm(false);
+  };
+
+  const handleDeleteCustomer = (customerId: string) => {
+    const customerToDelete = customers.find(c => c.id === customerId);
+    const updatedCustomers = customers.filter(c => c.id !== customerId);
+    setCustomers(updatedCustomers);
+    localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+
+    toast({
+      title: "Customer Deleted",
+      description: `${customerToDelete?.name} has been deleted successfully.`,
+    });
   };
 
   const filteredCustomers = customers.filter(customer =>
@@ -194,43 +207,69 @@ export const CustomerManagement = () => {
       {/* Customer List */}
       <div className="grid gap-4">
         {filteredCustomers.length === 0 ? (
-          <Card className="hover-glow">
+          <Card className="hover-glow bg-gray-800 border-gray-700">
             <CardContent className="p-8 text-center">
-              <Users className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg font-medium">No Data Available</p>
-              <p className="text-gray-400 text-sm mt-2">
+              <Users className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-400 text-lg font-medium">No Data Available</p>
+              <p className="text-gray-500 text-sm mt-2">
                 {searchTerm ? 'No customers found matching your search.' : 'Add your first customer to get started!'}
               </p>
             </CardContent>
           </Card>
         ) : (
           filteredCustomers.map((customer) => (
-            <Card key={customer.id} className="hover:shadow-lg transition-all duration-300 hover-glow">
+            <Card key={customer.id} className="hover:shadow-lg transition-all duration-300 hover-glow bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     <div className="flex items-center space-x-3">
-                      <h3 className="text-lg font-semibold">{customer.name}</h3>
+                      <h3 className="text-lg font-semibold text-white">{customer.name}</h3>
                       <Badge variant="outline" className="bg-brand-green/10 text-brand-green border-brand-green/30">
                         {customer.orderCount} orders
                       </Badge>
                     </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
+                    <div className="flex items-center space-x-2 text-gray-300">
                       <Phone className="h-4 w-4" />
                       <span>{customer.phone}</span>
                     </div>
-                    <div className="flex items-center space-x-2 text-gray-600">
+                    <div className="flex items-center space-x-2 text-gray-300">
                       <MapPin className="h-4 w-4" />
                       <span>{customer.address}</span>
                     </div>
                   </div>
-                  <div className="text-right space-y-1">
-                    <div className="text-lg font-bold text-brand-orange">
-                      PKR {customer.totalSpent.toLocaleString()}
+                  <div className="text-right space-y-1 flex items-start space-x-4">
+                    <div>
+                      <div className="text-lg font-bold text-brand-orange">
+                        PKR {customer.totalSpent.toLocaleString()}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        Last order: {formatDate(customer.lastOrder)}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      Last order: {formatDate(customer.lastOrder)}
-                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300 hover:bg-red-900/20">
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-gray-800 border-gray-700">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-white">Are you sure?</AlertDialogTitle>
+                          <AlertDialogDescription className="text-gray-300">
+                            This action cannot be undone. This will permanently delete the customer "{customer.name}" and all associated data.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600">Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDeleteCustomer(customer.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </CardContent>
