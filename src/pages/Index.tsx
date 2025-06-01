@@ -128,26 +128,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Bottom CTA Section */}
-      <section className="py-20 relative z-10">
-        <div className="container mx-auto px-6 text-center">
-          <div className="glass-effect rounded-3xl p-12 border border-white/10 max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Ready to Transform Your Business?
-            </h2>
-            <p className="text-xl text-gray-300 mb-8">
-              Join thousands of food businesses already using Cheezy Heaven
-            </p>
-            <Button 
-              onClick={() => setShowSignup(true)}
-              className="bg-gradient-to-r from-brand-orange to-brand-yellow hover:from-brand-orange/90 hover:to-brand-yellow/90 text-white hover-glow text-xl px-12 py-4 rounded-full shadow-2xl"
-            >
-              Start Your Free Trial
-            </Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

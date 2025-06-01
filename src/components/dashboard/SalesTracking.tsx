@@ -80,7 +80,6 @@ export const SalesTracking = () => {
           <Button
             onClick={exportToExcel}
             variant="outline"
-            className="hover-glow"
           >
             <Download className="h-4 w-4 mr-2" />
             Export to Excel
@@ -90,7 +89,7 @@ export const SalesTracking = () => {
               key={filter}
               variant={activeFilter === filter ? 'default' : 'outline'}
               onClick={() => setActiveFilter(filter)}
-              className={activeFilter === filter ? 'bg-brand-orange hover-glow' : 'hover-glow'}
+              className={activeFilter === filter ? 'bg-brand-orange' : ''}
             >
               {filter.charAt(0).toUpperCase() + filter.slice(1)}
             </Button>
@@ -100,7 +99,7 @@ export const SalesTracking = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="hover:shadow-lg transition-all duration-300 hover-glow">
+        <Card className="transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
             <ShoppingCart className="h-4 w-4 text-brand-orange" />
@@ -113,7 +112,7 @@ export const SalesTracking = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-300 hover-glow">
+        <Card className="transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-brand-green" />
@@ -126,7 +125,7 @@ export const SalesTracking = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-300 hover-glow">
+        <Card className="transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
             <TrendingUp className="h-4 w-4 text-brand-blue" />
@@ -139,7 +138,7 @@ export const SalesTracking = () => {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-all duration-300 hover-glow">
+        <Card className="transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
             <CalendarDays className="h-4 w-4 text-brand-purple" />
@@ -154,7 +153,7 @@ export const SalesTracking = () => {
       </div>
 
       {/* Data Table */}
-      <Card className="hover-glow">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Filter className="h-5 w-5" />
@@ -183,7 +182,7 @@ export const SalesTracking = () => {
                   {salesData.map((data, index) => {
                     const avgOrderValue = data.orders > 0 ? data.revenue / data.orders : 0;
                     return (
-                      <tr key={index} className="border-b hover:bg-gray-50 transition-colors">
+                      <tr key={index} className="border-b transition-colors">
                         <td className="py-3 px-4">{data.date}</td>
                         <td className="py-3 px-4 font-medium">{data.orders}</td>
                         <td className="py-3 px-4 font-medium text-brand-green">
@@ -205,7 +204,7 @@ export const SalesTracking = () => {
 
       {salesData.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 hover-glow">
+          <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10">
             <CardHeader>
               <CardTitle>Performance Insights</CardTitle>
             </CardHeader>
@@ -235,21 +234,21 @@ export const SalesTracking = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover-glow">
+          <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Button variant="outline" className="w-full justify-start hover-glow" onClick={exportToExcel}>
+                <Button variant="outline" className="w-full justify-start" onClick={exportToExcel}>
                   <Download className="h-4 w-4 mr-2" />
                   Export Sales Report
                 </Button>
-                <Button variant="outline" className="w-full justify-start hover-glow">
+                <Button variant="outline" className="w-full justify-start">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   View Analytics
                 </Button>
-                <Button variant="outline" className="w-full justify-start hover-glow">
+                <Button variant="outline" className="w-full justify-start">
                   <CalendarDays className="h-4 w-4 mr-2" />
                   Schedule Report
                 </Button>

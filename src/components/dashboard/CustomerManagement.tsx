@@ -150,7 +150,7 @@ export const CustomerManagement = () => {
 
       {/* Add Customer Form */}
       {showAddForm && (
-        <Card className="animate-scale-in hover-glow bg-gray-800 border-gray-700">
+        <Card className="animate-scale-in bg-gray-800 border-gray-700">
           <CardHeader>
             <CardTitle className="text-white text-lg sm:text-xl">Add New Customer</CardTitle>
           </CardHeader>
@@ -204,7 +204,7 @@ export const CustomerManagement = () => {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button type="submit" className="bg-brand-green hover:bg-brand-green/90 hover-glow w-full sm:w-auto">
+                <Button type="submit" className="bg-brand-green hover:bg-brand-green/90 w-full sm:w-auto">
                   Add Customer
                 </Button>
                 <Button type="button" variant="outline" onClick={() => setShowAddForm(false)} className="border-gray-600 text-gray-300 hover:bg-gray-700 w-full sm:w-auto">
@@ -217,7 +217,7 @@ export const CustomerManagement = () => {
       )}
 
       {/* Search */}
-      <Card className="hover-glow bg-gray-800 border-gray-700">
+      <Card className="bg-gray-800 border-gray-700">
         <CardContent className="p-3 sm:p-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -226,7 +226,7 @@ export const CustomerManagement = () => {
               placeholder="Search by phone number or name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 transition-all hover:border-brand-orange focus:border-brand-orange bg-gray-700 border-gray-600 text-white text-sm sm:text-base"
+              className="pl-10 transition-all focus:border-brand-orange bg-gray-700 border-gray-600 text-white text-sm sm:text-base"
             />
           </div>
         </CardContent>
@@ -235,7 +235,7 @@ export const CustomerManagement = () => {
       {/* Customer List */}
       <div className="grid gap-3 sm:gap-4">
         {filteredCustomers.length === 0 ? (
-          <Card className="hover-glow bg-gray-800 border-gray-700">
+          <Card className="bg-gray-800 border-gray-700">
             <CardContent className="p-6 sm:p-8 text-center">
               <Users className="h-10 w-10 sm:h-12 sm:w-12 text-gray-600 mx-auto mb-4" />
               <p className="text-gray-400 text-base sm:text-lg font-medium">No Data Available</p>
@@ -246,7 +246,7 @@ export const CustomerManagement = () => {
           </Card>
         ) : (
           filteredCustomers.map((customer) => (
-            <Card key={customer.id} className="hover:shadow-lg transition-all duration-300 hover-glow bg-gray-800 border-gray-700">
+            <Card key={customer.id} className="transition-all duration-300 bg-gray-800 border-gray-700">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
                   <div className="space-y-2 flex-1 min-w-0">
@@ -308,7 +308,7 @@ export const CustomerManagement = () => {
 
       {/* Stats */}
       {customers.length > 0 && (
-        <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 hover-glow border-gray-700">
+        <Card className="bg-gradient-to-r from-brand-orange/10 to-brand-green/10 border-gray-700">
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div className="flex-1">
