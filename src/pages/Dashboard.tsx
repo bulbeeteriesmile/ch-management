@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,16 +110,16 @@ const Dashboard = () => {
         return <Analytics />;
       default:
         return (
-          <div className="space-y-6 animate-fade-in">
-            <div className="flex justify-between items-center">
+          <div className="space-y-4 sm:space-y-6 animate-fade-in p-2 sm:p-0">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-white">Overview</h2>
-                <p className="text-gray-400">Welcome to Cheezy Heaven Dashboard</p>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Overview</h2>
+                <p className="text-sm sm:text-base text-gray-400">Welcome to Cheezy Heaven Dashboard</p>
               </div>
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   onClick={() => setShowOrderEntry(true)}
-                  className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-all duration-300 hover-glow"
+                  className="bg-gradient-to-r from-brand-orange to-brand-green hover:scale-105 transition-all duration-300 hover-glow w-full sm:w-auto"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Enter New Order
@@ -128,44 +129,44 @@ const Dashboard = () => {
                   <AlertDialogTrigger asChild>
                     <Button 
                       variant="destructive"
-                      className="bg-red-600 hover:bg-red-700"
+                      className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete All Data
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-gray-800 border-gray-700">
+                  <AlertDialogContent className="bg-gray-800 border-gray-700 mx-2 sm:mx-0 max-w-md sm:max-w-lg">
                     <AlertDialogHeader>
-                      <AlertDialogTitle className="text-white">Are you absolutely sure?</AlertDialogTitle>
-                      <AlertDialogDescription className="text-gray-300">
+                      <AlertDialogTitle className="text-white text-base sm:text-lg">Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-300 text-sm sm:text-base">
                         This action cannot be undone. This will permanently delete all customers, orders, and sales data.
                         <br /><br />
                         Type <span className="font-bold text-red-400">"clear data"</span> below to confirm:
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <div className="py-4">
-                      <Label htmlFor="confirmText" className="text-gray-300">Confirmation Text</Label>
+                      <Label htmlFor="confirmText" className="text-gray-300 text-sm sm:text-base">Confirmation Text</Label>
                       <Input
                         id="confirmText"
                         value={confirmText}
                         onChange={(e) => setConfirmText(e.target.value)}
                         placeholder="Type 'clear data' to confirm"
-                        className="mt-2 bg-gray-700 border-gray-600 text-white"
+                        className="mt-2 bg-gray-700 border-gray-600 text-white text-sm sm:text-base"
                       />
                     </div>
-                    <AlertDialogFooter>
+                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
                       <AlertDialogCancel 
                         onClick={() => {
                           setShowDeleteDialog(false);
                           setConfirmText('');
                         }}
-                        className="bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600"
+                        className="bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600 w-full sm:w-auto"
                       >
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction 
                         onClick={handleDeleteAllData}
-                        className="bg-red-600 hover:bg-red-700 text-white"
+                        className="bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto"
                       >
                         Delete All Data
                       </AlertDialogAction>
@@ -181,7 +182,7 @@ const Dashboard = () => {
               onClose={() => setShowOrderEntry(false)} 
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-white">Total Customers</CardTitle>
@@ -214,7 +215,7 @@ const Dashboard = () => {
                   <DollarSign className="h-4 w-4 text-brand-blue" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-white">PKR {stats.monthlyRevenue.toLocaleString()}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">PKR {stats.monthlyRevenue.toLocaleString()}</div>
                   <p className="text-xs text-gray-400">
                     {stats.monthlyRevenue === 0 ? 'Start earning!' : 'Total earned'}
                   </p>
@@ -227,31 +228,31 @@ const Dashboard = () => {
                   <TrendingUp className="h-4 w-4 text-brand-purple" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-white">PKR {stats.avgOrderValue.toFixed(2)}</div>
+                  <div className="text-xl sm:text-2xl font-bold text-white">PKR {stats.avgOrderValue.toFixed(2)}</div>
                   <p className="text-xs text-gray-400">Per order average</p>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Recent Activity</CardTitle>
+                  <CardTitle className="text-white text-base sm:text-lg">Recent Activity</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {customers.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Users className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                      <p className="text-gray-400">No activity yet. Add your first customer to get started!</p>
+                    <div className="text-center py-6 sm:py-8">
+                      <Users className="h-10 w-10 sm:h-12 sm:w-12 text-gray-500 mx-auto mb-4" />
+                      <p className="text-gray-400 text-sm sm:text-base">No activity yet. Add your first customer to get started!</p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {customers.slice(-3).reverse().map((customer, index) => (
                         <div key={index} className="flex items-center space-x-3">
-                          <div className="w-2 h-2 bg-brand-green rounded-full"></div>
-                          <div className="flex-1">
-                            <p className="text-sm text-white">Customer added: {customer.name}</p>
-                            <p className="text-xs text-gray-400">Phone: {customer.phone}</p>
+                          <div className="w-2 h-2 bg-brand-green rounded-full flex-shrink-0"></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white truncate">Customer added: {customer.name}</p>
+                            <p className="text-xs text-gray-400 break-all">Phone: {customer.phone}</p>
                           </div>
                         </div>
                       ))}
@@ -262,24 +263,24 @@ const Dashboard = () => {
 
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Quick Actions</CardTitle>
+                  <CardTitle className="text-white text-base sm:text-lg">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <button 
                       onClick={() => setActiveTab('customers')}
-                      className="p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-left group"
+                      className="p-3 sm:p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-left group"
                     >
-                      <Users className="h-6 w-6 text-brand-green mb-2 group-hover:scale-110 transition-transform" />
-                      <p className="font-medium text-white">Add Customer</p>
+                      <Users className="h-5 w-5 sm:h-6 sm:w-6 text-brand-green mb-2 group-hover:scale-110 transition-transform" />
+                      <p className="font-medium text-white text-sm sm:text-base">Add Customer</p>
                       <p className="text-xs text-gray-400">Manage customer data</p>
                     </button>
                     <button 
                       onClick={() => setActiveTab('analytics')}
-                      className="p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-left group"
+                      className="p-3 sm:p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-all text-left group"
                     >
-                      <TrendingUp className="h-6 w-6 text-brand-orange mb-2 group-hover:scale-110 transition-transform" />
-                      <p className="font-medium text-white">View Analytics</p>
+                      <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-brand-orange mb-2 group-hover:scale-110 transition-transform" />
+                      <p className="font-medium text-white text-sm sm:text-base">View Analytics</p>
                       <p className="text-xs text-gray-400">Business insights</p>
                     </button>
                   </div>
