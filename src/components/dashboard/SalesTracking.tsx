@@ -14,20 +14,56 @@ interface SalesData {
   customers: number;
 }
 
+interface RawSalesEntry {
+  date: string;
+  amount: number;
+  customerPhone: string;
+}
+
 export const SalesTracking = () => {
   const [activeFilter, setActiveFilter] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [salesData, setSalesData] = useState<SalesData[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load sales data from localStorage
-    const savedSalesData = localStorage.getItem('salesData');
-    if (savedSalesData) {
-      setSalesData(JSON.parse(savedSalesData));
+    // Load and process sales data from localStorage
+    const rawSalesData = localStorage.getItem('salesData');
+    const customersData = localStorage.getItem('customers');
+    
+    if (rawSalesData && customersData) {
+      const rawEntries: RawSalesEntry[] = JSON.parse(rawSalesData);
+      const customers = JSON.parse(customersData);
+      
+      // Process raw sales data into aggregated format
+      const processedData = processRawSalesData(rawEntries, customers);
+      setSalesData(processedData);
     } else {
       setSalesData([]);
     }
   }, [activeFilter]);
+
+  const processRawSalesData = (rawEntries: RawSalesEntry[], customers: any[]): SalesData[] => {
+    const dataMap = new Map<string, { orders: number; revenue: number; customerPhones: Set<string> }>();
+    
+    rawEntries.forEach(entry => {
+      const dateKey = entry.date;
+      if (!dataMap.has(dateKey)) {
+        dataMap.set(dateKey, { orders: 0, revenue: 0, customerPhones: new Set() });
+      }
+      
+      const dayData = dataMap.get(dateKey)!;
+      dayData.orders += 1;
+      dayData.revenue += entry.amount;
+      dayData.customerPhones.add(entry.customerPhone);
+    });
+    
+    return Array.from(dataMap.entries()).map(([date, data]) => ({
+      date,
+      orders: data.orders,
+      revenue: data.revenue,
+      customers: data.customerPhones.size
+    })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  };
 
   const totalStats = salesData.reduce(
     (acc, curr) => ({
@@ -97,9 +133,9 @@ export const SalesTracking = () => {
         </div>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards - Removed hover effects */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="transition-all duration-300">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
             <ShoppingCart className="h-4 w-4 text-brand-orange" />
@@ -112,7 +148,7 @@ export const SalesTracking = () => {
           </CardContent>
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
             <DollarSign className="h-4 w-4 text-brand-green" />
@@ -125,7 +161,7 @@ export const SalesTracking = () => {
           </CardContent>
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
             <TrendingUp className="h-4 w-4 text-brand-blue" />
@@ -138,7 +174,7 @@ export const SalesTracking = () => {
           </CardContent>
         </Card>
 
-        <Card className="transition-all duration-300">
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
             <CalendarDays className="h-4 w-4 text-brand-purple" />
@@ -182,7 +218,7 @@ export const SalesTracking = () => {
                   {salesData.map((data, index) => {
                     const avgOrderValue = data.orders > 0 ? data.revenue / data.orders : 0;
                     return (
-                      <tr key={index} className="border-b transition-colors">
+                      <tr key={index} className="border-b">
                         <td className="py-3 px-4">{data.date}</td>
                         <td className="py-3 px-4 font-medium">{data.orders}</td>
                         <td className="py-3 px-4 font-medium text-brand-green">
