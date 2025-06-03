@@ -1,22 +1,12 @@
 
-import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Users, TrendingUp, Shield, Star } from "lucide-react";
-import { LoginForm } from "@/components/auth/LoginForm";
-import { SignupForm } from "@/components/auth/SignupForm";
 
 const Index = () => {
-  const [showLogin, setShowLogin] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
-
-  if (showLogin) {
-    return <LoginForm onBack={() => setShowLogin(false)} onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }} />;
-  }
-
-  if (showSignup) {
-    return <SignupForm onBack={() => setShowSignup(false)} onSwitchToLogin={() => { setShowSignup(false); setShowLogin(true); }} />;
-  }
+  const handleDashboardClick = () => {
+    window.location.href = '/dashboard';
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black relative overflow-hidden">
@@ -40,17 +30,10 @@ const Index = () => {
           </div>
           <div className="flex space-x-3">
             <Button 
-              variant="outline" 
-              onClick={() => setShowLogin(true)} 
-              className="hover-glow border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
-            >
-              Login
-            </Button>
-            <Button 
-              onClick={() => setShowSignup(true)} 
+              onClick={handleDashboardClick}
               className="bg-gradient-to-r from-brand-orange to-brand-yellow hover:from-brand-orange/90 hover:to-brand-yellow/90 text-white hover-glow shadow-lg"
             >
-              Sign Up
+              Dashboard
             </Button>
           </div>
         </div>
@@ -80,7 +63,7 @@ const Index = () => {
             <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-16">
               <Button 
                 size="lg" 
-                onClick={() => setShowSignup(true)}
+                onClick={handleDashboardClick}
                 className="bg-gradient-to-r from-white to-gray-100 text-gray-900 hover:from-gray-100 hover:to-white hover-glow text-xl px-16 py-6 rounded-full group shadow-2xl font-semibold"
               >
                 Get Started Now
