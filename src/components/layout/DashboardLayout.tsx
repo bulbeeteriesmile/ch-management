@@ -43,7 +43,7 @@ export const DashboardLayout = ({ children, activeTab, setActiveTab }: Dashboard
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold bg-gradient-to-r from-brand-orange to-brand-green bg-clip-text text-transparent">
-              Cheezy Heaven
+              FlavorForge
             </span>
           </div>
           <Button

@@ -137,7 +137,7 @@ export const Analytics = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-white">Cheezy Heaven Analytics</h2>
+          <h2 className="text-2xl font-bold text-white">FlavorForge Analytics</h2>
           <p className="text-gray-400">Comprehensive business insights and performance metrics</p>
         </div>
       </div>

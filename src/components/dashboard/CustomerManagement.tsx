@@ -137,7 +137,7 @@ export const CustomerManagement = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-white">Customer Management</h2>
-          <p className="text-sm sm:text-base text-gray-400">Manage your Cheezy Heaven customer database</p>
+          <p className="text-sm sm:text-base text-gray-400">Manage your FlavorForge customer database</p>
         </div>
         <Button 
           onClick={() => setShowAddForm(!showAddForm)}

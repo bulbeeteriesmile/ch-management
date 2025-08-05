@@ -114,7 +114,7 @@ const Dashboard = () => {
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white">Overview</h2>
-                <p className="text-sm sm:text-base text-gray-400">Welcome to Cheezy Heaven Dashboard</p>
+                <p className="text-sm sm:text-base text-gray-400">Welcome to FlavorForge Dashboard</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
